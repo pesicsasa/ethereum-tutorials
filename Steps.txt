@@ -1,0 +1,46 @@
+1. Installing prerequisites - geth, truffle, solidity compiler
+
+2. Create a genesis.json file
+    — chainId: A unique identifier of the new private blockchain
+    — homesteadBlock: Homestead is the first production release of Ethereum and since the developers are already using 
+    this version the value of this parameter can be left as ‘0’.
+    — eip155Block/eip158Block: EIP stands for “Ethereum Improvement Proposals”, these were implement to release Homestead. 
+      In a private blockchain development hard forks aren’t needed, hence the parameter value should be left as ‘0’.
+    — difficulty: controls the complexity of the mining puzzle and a lower value enables quicker mining.
+    — gasLimit: Establishes an upper limit for executing smart contracts.
+    — alloc: allows allocation of Ethers to a specific address.
+
+3. To generate the initial folder structure run geth --datadir blkchain init genesis.json
+    — This line initializes the blockchain and the blockchain data will be stored in the “blkchain” folder. 
+    — This folder will grow in size as data is added to the blockchain, and if this folder is deleted the block chain will need to be reinitialized.
+
+4. Bring up the node by running geth --port 3000 --networkid 55555 --nodiscover --datadir=./blkchain --maxpeers=0  --rpc --rpcport 8545 --rpcaddr 127.0.0.1 --rpccorsdomain "*" --rpcapi "eth,net,web3,personal,miner" --allow-insecure-unlock
+    — networkId: random number (excluding certain numbers)
+    — nodiscover: Disables the peer discovery mechanism (manual peer addition).
+    — datadir: indicates the data directory where your blockchain will reside.
+    — maxpeers: Maximum number of network peers (network disabled if set to 0) (default: 25)
+    — rpc: Enable the HTTP-RPC server
+    — rpcapi: this allows us to communicate with the Ethereum network using the web3js RPC methods in the Geth Javascript console.
+    — allow-insecure-unlock: allows unlocking of accounts when not running on  (If you want to enable unlock with opened http)
+
+5. From another terminal attach to the Ethereum node with geth attach http://127.0.0.1:8545
+
+6. Create an account and “mine” for Ether.
+    6.1 Run personal.newAccount('seed')
+    6.2 Run personal.unlockAccount(web3.eth.coinbase, "seed", 15000)
+    6.3 Create as many other accounts as you want
+
+7. Start/stop mining with:
+    7.1 miner.start()
+    7.2 miner.stop()
+
+7a. With Truffle project it is very easy to spin up a DevEnv as well. By running truffle develop, truffle will create a one-node Ethereum blockchain with 10 accounts pre-funded. Inside the truffle develop console, you can then run truffle compile, truffle migrate, truffle test, etc. 
+    — To continue to deployment of a simple smart contract choose either to use the local network or the truffle develop. If using the local network we have just deployed, make sure to change the configuration in erc20/truffle.js.
+
+8. We will continue to create a very simple ERC20 token, and a crowdsale for that token. Open-zeppelin library makes creation of ERC20 tokens very simple (https://www.npmjs.com/package/openzeppelin-solidity).
+    8.1 Explore the MyToken.sol and MyTokenCrowdsale.sol in the contracts folder. The define the basic token and crowdsale functionalities. The crowdsale is a minted crowdsale. 
+    8.2 Explore the migrations folder, specifically the 2_deploy_contracts. Here we specify the token name, initial supply, rate, etc.
+
+11. To deploy the contract to the network of choice use truffle compile and truffle migrate
+
+12. Test the Token and Crowdsale contracts by connecting the local network to Metamask, and buying MST tokens from the crowdsale smart contract.
